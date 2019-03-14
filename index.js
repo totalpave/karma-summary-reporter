@@ -177,6 +177,7 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 		}, this);
 
 		if (Object.keys(failMap).length > 0) {
+			this.writeCommonMsg('\n');
 			this.writeCommonMsg(chalk.bold(chalk.underline('FAILED')) + '\n');
 			for (var i in failMap) {
 				var failItem = failMap[i];
@@ -184,7 +185,9 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 				for (var i = 0; i < failItem.items.length; i++) {
 					this.printResultLabel(failItem.items[i]);
 				}
+				this.writeCommonMsg("\n");
 			}
+			this.writeCommonMsg('\n');
 		}
 
 		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
