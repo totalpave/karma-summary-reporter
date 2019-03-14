@@ -107,18 +107,6 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 	}
 
 	this.onRunComplete = function(browsers, results) {
-		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
-
-		// Browser overview
-		browsers.forEach(function(browser, i) {
-			this.writeCommonMsg(' ' + i + ': ' + this.renderBrowser(browser) + '\n');
-		}, this);
-
-		if (!specorder.length) {
-			this.writeCommonMsg(chalk.red('No tests did run in any browsers.'));
-			return;
-		}
-
 		var tableHeaderShown = false;
 
 		// Test details
@@ -174,6 +162,18 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 			this.writeCommonMsg("\n");
 			counts.shown++;
 		}, this);
+
+		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
+
+		// Browser overview
+		browsers.forEach(function(browser, i) {
+			this.writeCommonMsg(' ' + i + ': ' + this.renderBrowser(browser) + '\n');
+		}, this);
+
+		if (!specorder.length) {
+			this.writeCommonMsg(chalk.red('No tests did run in any browsers.'));
+			return;
+		}
 
 		if (counts.hidden) {
 			this.writeCommonMsg("  " + chalk.green(''+counts.hidden) +
