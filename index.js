@@ -170,7 +170,7 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 		}, this);
 
 		if (failed.length > 0) {
-			this.writeCommonMsg(chalk.bold(chal.underline('FAILED')) + '\n');
+			this.writeCommonMsg(chalk.bold(chalk.underline('FAILED')) + '\n');
 			for (var i = 0; i < failed.length; i++) {
 				this.printResultLabel(failed[i]);
 			}
