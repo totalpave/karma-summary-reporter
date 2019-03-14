@@ -168,7 +168,7 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 						}
 					};
 
-					failMap[sr.spec].push(result);
+					failMap[sr.spec].items.push(result);
 				}
 				this.printResultLabel(result, i);
 			}, this);
