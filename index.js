@@ -113,27 +113,9 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 	}
 
 	this.onRunComplete = function(browsers, results) {
-		if (!runStarted) {
-			// For example when there are compilation errors, onRunComplete might get called
-			// even before a proper run was started.
-			// We don't report a summary for such events.
-			return;
-		}
-		runStarted = false;
-
-		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
-
-		// Browser overview
-		browsers.forEach(function(browser, i) {
-			this.writeCommonMsg(' ' + i + ': ' + this.renderBrowser(browser) + '\n');
-		}, this);
-
-		if (!specorder.length) {
-			this.writeCommonMsg(chalk.red('No tests did run in any browsers.'));
-			return;
-		}
-
 		var tableHeaderShown = false;
+
+		var failMap = {};
 
 		// Test details
 		var counts = { shown: 0, hidden: 0 };
@@ -183,11 +165,48 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 				this.writeCommonMsg('  ');
 			}
 			browsers.forEach(function(browser, i) {
-				this.printResultLabel(sr.results[browser.id], i);
+				var result = sr.results[browser.id];
+				if (result && !result.skipped && !result.success) {
+					if (!failMap[sr.spec]) {
+						failMap[sr.spec] = {
+							spec : sr.spec,
+							items: []
+						}
+					};
+
+					failMap[sr.spec].items.push(result);
+				}
+				this.printResultLabel(result, i);
 			}, this);
 			this.writeCommonMsg("\n");
 			counts.shown++;
 		}, this);
+
+		if (Object.keys(failMap).length > 0) {
+			this.writeCommonMsg('\n');
+			this.writeCommonMsg(chalk.bold(chalk.underline('FAILED')) + '\n');
+			for (var i in failMap) {
+				var failItem = failMap[i];
+				this.printSpecLabel(failItem.spec);
+				for (var i = 0; i < failItem.items.length; i++) {
+					this.printResultLabel(failItem.items[i]);
+				}
+				this.writeCommonMsg("\n");
+			}
+			this.writeCommonMsg('\n');
+		}
+
+		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
+
+		// Browser overview
+		browsers.forEach(function(browser, i) {
+			this.writeCommonMsg(' ' + i + ': ' + this.renderBrowser(browser) + '\n');
+		}, this);
+
+		if (!specorder.length) {
+			this.writeCommonMsg(chalk.red('No tests did run in any browsers.'));
+			return;
+		}
 
 		if (counts.hidden) {
 			this.writeCommonMsg("  " + chalk.green(''+counts.hidden) +
