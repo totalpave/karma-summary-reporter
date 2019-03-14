@@ -109,6 +109,8 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 	this.onRunComplete = function(browsers, results) {
 		var tableHeaderShown = false;
 
+		var failed = [];
+
 		// Test details
 		var counts = { shown: 0, hidden: 0 };
 		specorder.forEach(function(specid) {
@@ -157,11 +159,22 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 				this.writeCommonMsg('  ');
 			}
 			browsers.forEach(function(browser, i) {
-				this.printResultLabel(sr.results[browser.id], i);
+				var result = sr.results[browser.id];
+				if (result.failed) {
+					failed.push(result);
+				}
+				this.printResultLabel(result, i);
 			}, this);
 			this.writeCommonMsg("\n");
 			counts.shown++;
 		}, this);
+
+		if (failed.length > 0) {
+			this.writeCommonMsg(chalk.bold(chal.underline('FAILED')) + '\n');
+			for (var i = 0; i < failed.length; i++) {
+				this.printResultLabel(failed[i]);
+			}
+		}
 
 		this.writeCommonMsg(chalk.bold(chalk.underline('SUMMARY')) + '\n');
 
