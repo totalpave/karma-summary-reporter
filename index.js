@@ -109,7 +109,7 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 	this.onRunComplete = function(browsers, results) {
 		var tableHeaderShown = false;
 
-		var failed = [];
+		var failMap = {};
 
 		// Test details
 		var counts = { shown: 0, hidden: 0 };
@@ -161,7 +161,14 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 			browsers.forEach(function(browser, i) {
 				var result = sr.results[browser.id];
 				if (result && !result.skipped && !result.success) {
-					failed.push(result);
+					if (!failMap[sr.spec]) {
+						failMap[sr.spec] = {
+							spec : sr.spec,
+							items: []
+						}
+					};
+
+					failMap[sr.spec].push(result);
 				}
 				this.printResultLabel(result, i);
 			}, this);
@@ -169,10 +176,14 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 			counts.shown++;
 		}, this);
 
-		if (failed.length > 0) {
+		if (Object.keys(failMap).length > 0) {
 			this.writeCommonMsg(chalk.bold(chalk.underline('FAILED')) + '\n');
-			for (var i = 0; i < failed.length; i++) {
-				this.printResultLabel(failed[i]);
+			for (var i in failMap) {
+				var failItem = failMap[i];
+				this.printSpecLabel(failItem.spec);
+				for (var i = 0; i < failItem.items.length; i++) {
+					this.printResultLabel(failItem.items[i]);
+				}
 			}
 		}
 
