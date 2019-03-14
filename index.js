@@ -160,7 +160,7 @@ var SummaryReporter = function(baseReporterDecorator, config) {
 			}
 			browsers.forEach(function(browser, i) {
 				var result = sr.results[browser.id];
-				if (result.failed) {
+				if (result && !result.skipped && !result.success) {
 					failed.push(result);
 				}
 				this.printResultLabel(result, i);
