@@ -1,5 +1,5 @@
 {
-  "name": "karma-summary-reporter",
+  "name": "@totalpave/karma-summary-reporter",
   "version": "1.8.0",
   "description": "Displays a summary of tested browsers and failed testcases after a test run.",
   "main": "index.js",
